@@ -41,6 +41,17 @@ public:
     {
         return "XRR";
     }
+	
+	static char const* getCurrencyCodeVBC ()
+    {
+        return "VBC";
+    }
+
+    static char const* getCurrencyCodeRippleVBC ()
+    {
+        return "VBB";
+    }
+	
 
     static int getCurrencyPrecision ()
     {
@@ -64,6 +75,13 @@ public:
 #define SYSTEM_CURRENCY_USERS       100000000ull
 #define SYSTEM_CURRENCY_PARTS       1000000ull      // 10^SYSTEM_CURRENCY_PRECISION
 #define SYSTEM_CURRENCY_START       (SYSTEM_CURRENCY_GIFT*SYSTEM_CURRENCY_USERS*SYSTEM_CURRENCY_PARTS)
+
+#define VBC_INCREASE_RATE           0.003
+#define VRP_INCREASE_RATE           0.001
+//#define SYSTEM_CURRENCY_GIFT_VBC        1000ull
+//#define SYSTEM_CURRENCY_USERS_VBC       100000000ull
+//#define SYSTEM_CURRENCY_PARTS_VBC       1000000ull      // 10^SYSTEM_CURRENCY_PRECISION
+//#define SYSTEM_CURRENCY_START_VBC       (SYSTEM_CURRENCY_GIFT_VBC*SYSTEM_CURRENCY_USERS_VBC*SYSTEM_CURRENCY_PARTS_VBC)
 
 } // ripple
 

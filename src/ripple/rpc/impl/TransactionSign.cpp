@@ -342,6 +342,7 @@ Json::Value transactionSign (
     try
     {
         stpTrans = std::make_shared<SerializedTransaction> (*sopTrans);
+        WriteLog(lsINFO, RPCHandler) << "vPal: before sign " << stpTrans->getFieldAmount(sfAmount);
     }
     catch (std::exception&)
     {
@@ -371,7 +372,9 @@ Json::Value transactionSign (
 
     try
     {
-        tpTrans = std::make_shared<Transaction> (stpTrans, Validate::NO);
+        WriteLog(lsINFO, RPCHandler) << "vPal: after sign " << stpTrans->getFieldAmount(sfAmount);
+        tpTrans = std::make_shared<Transaction>(stpTrans, Validate::NO);
+        WriteLog(lsINFO, RPCHandler) << "vPal: after copy" << tpTrans->getSTransaction()->getFieldAmount(sfAmount);
     }
     catch (std::exception&)
     {

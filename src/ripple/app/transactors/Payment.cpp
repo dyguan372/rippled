@@ -69,7 +69,7 @@ public:
         auto const& uDstCurrency = saDstAmount.getCurrency ();
 
         // isZero() is XRP.  FIX!
-        bool const bXRPDirect = uSrcCurrency.isZero () && uDstCurrency.isZero ();
+		bool const bXRPDirect = (uSrcCurrency.isZero() && uDstCurrency.isZero()) || (isVBC(uSrcCurrency) && isVBC(uDstCurrency));
 
         m_journal.trace <<
             "maxSourceAmount=" << maxSourceAmount.getFullText () <<
@@ -340,10 +340,23 @@ public:
             }
             else
             {
-                // The source account does have enough money, so do the arithmetic
-                // for the transfer and make the ledger change.
-                mTxnAccount->setFieldAmount (sfBalance, mSourceBalance - saDstAmount);
-                sleDst->setFieldAmount (sfBalance, sleDst->getFieldAmount (sfBalance) + saDstAmount);
+				// The source account does have enough money, so do the arithmetic
+				// for the transfer and make the ledger change.
+                m_journal.info << "vPal: Deduct coin "
+                    << isVBC(saDstAmount) << mSourceBalance << saDstAmount;
+
+                if (isVBC(saDstAmount))
+				{
+					mTxnAccount->setFieldAmount(sfBalanceVBC, mSourceBalance - saDstAmount);
+					sleDst->setFieldAmount(sfBalanceVBC, sleDst->getFieldAmount(sfBalanceVBC) + saDstAmount);
+				}
+				else
+				{
+					mTxnAccount->setFieldAmount(sfBalance, mSourceBalance - saDstAmount);
+					sleDst->setFieldAmount(sfBalance, sleDst->getFieldAmount(sfBalance) + saDstAmount);
+				}
+
+
 
                 // Re-arm the password change fee if we can and need to.
                 if ((sleDst->getFlags () & lsfPasswordSpent))

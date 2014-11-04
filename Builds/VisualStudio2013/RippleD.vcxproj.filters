@@ -5703,5 +5703,13 @@
     <ClInclude Include="..\..\src\websocket\src\websocket_frame.hpp">
       <Filter>websocket\src</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\src\ripple\app\misc\DividendVoteImpl.cpp">
+      <Filter>ripple\app\misc</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\ripple\app\misc\DividendVote.h">
+      <Filter>ripple\app\misc</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

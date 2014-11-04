@@ -39,6 +39,9 @@ Transactor::transact (
     TransactionEngineParams params,
     TransactionEngine* engine)
 {
+    WriteLog(lsDEBUG, Transactor)
+        << "Applying transaction";
+
     switch (txn.getTxnType ())
     {
     case ttPAYMENT:
@@ -272,6 +275,8 @@ TER Transactor::apply ()
     if (terResult != tesSUCCESS)
         return (terResult);
 
+    WriteLog(lsDEBUG, Transactor)
+        << "Begin to apply";
     mTxnAccount = mEngine->entryCache (ltACCOUNT_ROOT,
         Ledger::getAccountRootIndex (mTxnAccountID));
     calculateFee ();

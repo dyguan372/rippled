@@ -828,7 +828,7 @@ PeerImp::on_message_begin (std::uint16_t type,
 {
     error_code ec;
 
-#if 1
+#if 0
     beast::debug_ostream log;
     log << m->DebugString();
 #endif

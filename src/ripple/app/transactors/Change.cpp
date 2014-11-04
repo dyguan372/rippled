@@ -173,6 +173,9 @@ private:
 
     TER applyDividend()
     {
+        m_journal.debug <<
+            "vPal: Start dividend.";
+
         SLE::pointer dividendObject = mEngine->entryCache(
             ltDIVIDEND, Ledger::getLedgerDividendIndex());
         
@@ -186,6 +189,7 @@ private:
 
         uint32_t dividendLedger = mTxn.getFieldU32(sfDividendLedger);
         uint64_t dividendCoins = mTxn.getFieldU64(sfDividendCoins);
+		uint64_t dividendCoinsVBC = mTxn.getFieldU64(sfDividendCoinsVBC);
 
         std::vector<std::pair<RippleAddress, uint64_t> > accounts;
         mEngine->getLedger()->visitStateItems(std::bind(retrieveAccount,
@@ -201,10 +205,13 @@ private:
             rank[accounts[i].first] = r;
             sum += r;
         }
-        std::for_each(rank.begin(), rank.end(), dividend_account(mEngine, dividendCoins, sum, m_journal));
+        uint64_t actualTotalDividend = 0;
+        uint64_t actualTotalDividendVBC = 0;
+        std::for_each(rank.begin(), rank.end(), dividend_account(mEngine, dividendCoinsVBC, sum, &actualTotalDividend, &actualTotalDividendVBC, m_journal));
 
         dividendObject->setFieldU32(sfDividendLedger, dividendLedger);
-        dividendObject->setFieldU64(sfDividendCoins, dividendCoins);
+        dividendObject->setFieldU64(sfDividendCoins, actualTotalDividend);
+        dividendObject->setFieldU64(sfDividendCoinsVBC, actualTotalDividendVBC);
 
         mEngine->entryModify(dividendObject);
 
@@ -225,29 +232,40 @@ private:
     class dividend_account {
         RippleAddress root;
         TransactionEngine *engine;
-        uint64_t totalDividend;
+        uint64_t totalDividendVBC;
         uint32_t totalPart;
         beast::Journal m_journal;
+        uint64_t *pActualTotalDividend;
+        uint64_t *pActualTotalDividendVBC;
     public:
-        dividend_account(TransactionEngine *e, uint64_t d, uint32_t p, const beast::Journal &j)
-            : engine(e), totalDividend(d), totalPart(p), m_journal(j)
+        dividend_account(TransactionEngine *e, uint64_t d, uint32_t p, uint64_t *patd, uint64_t *patdv, const beast::Journal &j)
+            : engine(e), totalDividendVBC(d), totalPart(p), m_journal(j)
+            , pActualTotalDividend(patd), pActualTotalDividendVBC(patdv)
         {
-            RippleAddress rootSeedMaster = RippleAddress::createSeedGeneric ("masterpassphrase");
-            RippleAddress rootGeneratorMaster = RippleAddress::createGeneratorPublic (rootSeedMaster);
-            root = RippleAddress::createAccountPublic (rootGeneratorMaster, 0);
+            RippleAddress rootSeedMaster = RippleAddress::createSeedGeneric("masterpassphrase");
+            RippleAddress rootGeneratorMaster = RippleAddress::createGeneratorPublic(rootSeedMaster);
+            root = RippleAddress::createAccountPublic(rootGeneratorMaster, 0);
         }
 
         void operator ()(const std::pair<RippleAddress, uint64_t> &v)
         {
-            uint64_t div = totalDividend * v.second / totalPart;
+            uint64_t divVBC = totalDividendVBC * v.second / totalPart;
             m_journal.info << v.first.humanAccountID() << "\t" << root.humanAccountID();
-            if (div>0 && v.first!=root) {
-                auto const index = Ledger::getAccountRootIndex (v.first);
-                SLE::pointer sleDst (engine->entryCache (ltACCOUNT_ROOT, index));
+            //if (v.first.humanAccountID() != root.humanAccountID()) {
+            if (1) {
+                    auto const index = Ledger::getAccountRootIndex(v.first);
+                SLE::pointer sleDst(engine->entryCache(ltACCOUNT_ROOT, index));
                 if (sleDst) {
                     engine->entryModify(sleDst);
+                    uint64_t prevBalanceVBC = sleDst->getFieldAmount(sfBalanceVBC).getNValue();
+                    if (divVBC >= SYSTEM_CURRENCY_PARTS) {
+                        sleDst->setFieldAmount(sfBalanceVBC, prevBalanceVBC + divVBC);
+                        *pActualTotalDividendVBC += divVBC;
+                    }
                     uint64_t prevBalance = sleDst->getFieldAmount(sfBalance).getNValue();
-                    sleDst->setFieldAmount(sfBalance, prevBalance+div);
+                    uint64_t div = prevBalanceVBC * VRP_INCREASE_RATE;
+                    sleDst->setFieldAmount(sfBalance, prevBalance + div);
+                    *pActualTotalDividend += div;
                 }
             }
         }
@@ -257,7 +275,7 @@ private:
     {
         if (sle->getType() == ltACCOUNT_ROOT) {
             RippleAddress addr = sle->getFieldAccount(sfAccount);
-            uint64_t bal = sle->getFieldAmount(sfBalance).getNValue();
+            uint64_t bal = sle->getFieldAmount(sfBalanceVBC).getNValue();
             accounts.push_back(std::make_pair(addr, bal));
         }
     }

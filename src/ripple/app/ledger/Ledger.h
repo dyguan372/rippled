@@ -102,13 +102,14 @@ public:
 public:
 
     // used for the starting bootstrap ledger
-    Ledger (const RippleAddress & masterID, std::uint64_t startAmount);
+	Ledger(const RippleAddress & masterID, std::uint64_t startAmount);
+	//Ledger(const RippleAddress & masterID, std::uint64_t startAmount, std::uint64_t startAmountVBC);
 
     Ledger (uint256 const& parentHash, uint256 const& transHash,
             uint256 const& accountHash,
-            std::uint64_t totCoins, std::uint32_t closeTime,
+			std::uint64_t totCoins, std::uint64_t totCoinsVBC, std::uint32_t closeTime,
             std::uint32_t parentCloseTime, int closeFlags, int closeResolution,
-            std::uint32_t dividendTime, std::uint32_t ledgerSeq, bool & loaded);
+            std::uint32_t dividendLedger, std::uint32_t ledgerSeq, bool & loaded);
     // used for database ledgers
 
     Ledger (std::uint32_t ledgerSeq, std::uint32_t closeTime);
@@ -192,6 +193,12 @@ public:
     {
         return mTotCoins;
     }
+	std::uint64_t getTotalCoinsVBC() const
+	{
+		return mTotCoinsVBC;
+	}
+    std::uint64_t getDividendCoins() const;
+    std::uint64_t getDividendCoinsVBC() const;
     void destroyCoins (std::uint64_t fee)
     {
         mTotCoins -= fee;
@@ -200,10 +207,20 @@ public:
     {
         mTotCoins += dividend;
     }
+	void createCoinsVBC(std::uint64_t dividendVBC)
+	{
+		mTotCoinsVBC += dividendVBC;
+	}
     void setTotalCoins (std::uint64_t totCoins)
     {
         mTotCoins = totCoins;
     }
+	void setTotalCoinsVBC(std::uint64_t totCoinsVBC)
+	{
+		mTotCoinsVBC = totCoinsVBC;
+	}
+	void updateTotalCoins ();
+	void updateTotalCoinsVBC();
     std::uint32_t getCloseTimeNC () const
     {
         return mCloseTime;
@@ -525,6 +542,7 @@ private:
     uint256       mTransHash;
     uint256       mAccountHash;
     std::uint64_t mTotCoins;
+	std::uint64_t mTotCoinsVBC;
     std::uint32_t mLedgerSeq;
 
     // when this ledger closed
