@@ -108,7 +108,7 @@ public:
             uint256 const& accountHash,
             std::uint64_t totCoins, std::uint32_t closeTime,
             std::uint32_t parentCloseTime, int closeFlags, int closeResolution,
-            std::uint32_t dividendTime, std::uint32_t ledgerSeq, bool & loaded);
+            std::uint32_t dividendLedger, std::uint32_t ledgerSeq, bool & loaded);
     // used for database ledgers
 
     Ledger (std::uint32_t ledgerSeq, std::uint32_t closeTime);
