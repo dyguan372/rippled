@@ -80,7 +80,8 @@ public:
     void doVoting(Ledger::ref lastClosedLedger, SHAMap::ref initialPosition) override
     {
         std::uint32_t dividendLedger = lastClosedLedger->getDividendLedger();
-        std::uint64_t dividendCoins = 0.003 * lastClosedLedger->getTotalCoins();
+        std::uint64_t dividendCoins = 0.003 * lastClosedLedger->getTotalCoins(); 
+		std::uint64_t dividendCoinsVBC = 0.003 * lastClosedLedger->getTotalCoinsVBC();
 
         VotableInteger<std::uint32_t> dividendLedgerVote(dividendLedger, mTargetDividendLedger);
         ValidationSet set = getApp().getValidations().getValidations(lastClosedLedger->getParentHash());
@@ -89,6 +90,7 @@ public:
         trans.setFieldAccount(sfAccount, Account());
         trans.setFieldU32(sfDividendLedger, dividendLedger);
         trans.setFieldU64(sfDividendCoins, dividendCoins);
+		trans.setFieldU64(sfDividendCoinsVBC, dividendCoinsVBC);
 
         uint256 txID = trans.getTransactionID();
 

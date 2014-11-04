@@ -85,6 +85,7 @@ TxFormats::TxFormats ()
     add ("Dividend", ttDIVIDEND)
         << SOElement (sfDividendLedger,      SOE_REQUIRED)
         << SOElement (sfDividendCoins,       SOE_REQUIRED)
+        << SOElement (sfDividendCoinsVBC,    SOE_REQUIRED)
         ;
 }
 

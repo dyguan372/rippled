@@ -234,9 +234,16 @@ TER TransactionEngine::applyTransaction (
                 mLedger->destroyCoins (saPaid.getNValue ());
 
                 uint64_t dividendCoins = txn.getDividendCoins();
+				uint64_t dividendCoinsVBC = txn.getDividendCoinsVBC();
+
                 WriteLog(lsINFO, TransactionEngine) <<
                     "vPal: Dividend coins " << dividendCoins;
                 mLedger->createCoins(dividendCoins);
+
+				WriteLog(lsINFO, TransactionEngine) <<
+					"vPal: Dividend coinsVBC " << dividendCoinsVBC;
+				mLedger->createCoinsVBC(dividendCoinsVBC);
+
             }
         }
     }

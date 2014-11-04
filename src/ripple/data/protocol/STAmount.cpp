@@ -149,11 +149,15 @@ STAmount::construct (SerializerIterator& sit, SField::ref name)
 
     if (isXRP (issue.currency))
         throw std::runtime_error ("invalid native currency");
+	if (isVBC (issue.currency))
+		throw std::runtime_error ("invalid native currency");
 
     issue.account.copyFrom (sit.get160 ());
 
     if (isXRP (issue.account))
         throw std::runtime_error ("invalid native account");
+	if (isVBC(issue.account))
+		throw std::runtime_error ("invalid native account");
 
     // 10 bits for the offset, sign and "not native" flag
     int offset = static_cast<int> (value >> (64 - 10));
@@ -458,7 +462,7 @@ void
 STAmount::setIssue (Issue const& issue)
 {
     mIssue = std::move(issue);
-    mIsNative = isXRP (*this);
+	mIsNative = isXRP(*this) || isVBC(*this);
 }
 
 std::uint64_t
@@ -605,6 +609,8 @@ STAmount::getFullText () const
 
         if (isXRP (*this))
             ret += "0";
+		else if (isVBC(*this))
+			ret += "0xFF";
         else if (mIssue.account == noAccount())
             ret += "1";
         else
@@ -761,7 +767,7 @@ STAmount::duplicate () const
 // inclusive.
 void STAmount::canonicalize ()
 {
-    if (isXRP (*this))
+    if (isXRP (*this) || isVBC (*this))
     {
         // native currency amounts should always have an offset of zero
         mIsNative = true;
@@ -911,7 +917,7 @@ amountFromJson (SField::ref name, Json::Value const& v)
 
     bool const native = ! currency.isString () ||
         currency.asString ().empty () ||
-        (currency.asString () == systemCurrencyCode());
+		(currency.asString() == systemCurrencyCode() || currency.asString() == systemCurrencyCodeVBC());
 
     if (native)
     {
@@ -928,7 +934,7 @@ amountFromJson (SField::ref name, Json::Value const& v)
                 || !to_issuer (issue.account, issuer.asString ()))
             throw std::runtime_error ("invalid issuer");
 
-        if (isXRP (issue.currency))
+		if (isXRP(issue.currency) || isVBC(issue.currency))
             throw std::runtime_error ("invalid issuer");
     }
 
@@ -1188,7 +1194,7 @@ multiply (STAmount const& v1, STAmount const& v2, Issue const& issue)
     if (v1 == zero || v2 == zero)
         return STAmount (issue);
 
-    if (v1.native() && v2.native() && isXRP (issue))
+	if (v1.native() && v2.native() && (isXRP(issue) || isVBC(issue)))
     {
         std::uint64_t const minV = v1.getSNValue () < v2.getSNValue ()
                 ? v1.getSNValue () : v2.getSNValue ();
@@ -1445,7 +1451,7 @@ mulRound (STAmount const& v1, STAmount const& v2,
     if (v1 == zero || v2 == zero)
         return {issue};
 
-    if (v1.native() && v2.native() && isXRP (issue))
+	if (v1.native() && v2.native() && (isXRP(issue) || isVBC(issue)))
     {
         std::uint64_t minV = (v1.getSNValue () < v2.getSNValue ()) ?
                 v1.getSNValue () : v2.getSNValue ();
@@ -1502,7 +1508,7 @@ mulRound (STAmount const& v1, STAmount const& v2,
     std::uint64_t amount = v.getuint64 ();
     int offset = offset1 + offset2 + 14;
     canonicalizeRound (
-        isXRP (issue), amount, offset, resultNegative != roundUp);
+		(isXRP(issue) || isVBC(issue)), amount, offset, resultNegative != roundUp);
     return STAmount (issue, amount, offset, resultNegative);
 }
 
@@ -1553,7 +1559,7 @@ divRound (STAmount const& num, STAmount const& den,
     std::uint64_t amount = v.getuint64 ();
     int offset = numOffset - denOffset - 17;
     canonicalizeRound (
-        isXRP (issue), amount, offset, resultNegative != roundUp);
+        (isXRP (issue) || isVBC (issue)), amount, offset, resultNegative != roundUp);
     return STAmount (issue, amount, offset, resultNegative);
 }
 

@@ -27,6 +27,7 @@ LedgerFormats::LedgerFormats ()
             << SOElement (sfAccount,             SOE_REQUIRED)
             << SOElement (sfSequence,            SOE_REQUIRED)
             << SOElement (sfBalance,             SOE_REQUIRED)
+			<< SOElement (sfBalanceVBC,          SOE_REQUIRED)
             << SOElement (sfOwnerCount,          SOE_REQUIRED)
             << SOElement (sfPreviousTxnID,       SOE_REQUIRED)
             << SOElement (sfPreviousTxnLgrSeq,   SOE_REQUIRED)
@@ -112,6 +113,7 @@ LedgerFormats::LedgerFormats ()
     add ("Dividend", ltDIVIDEND)
             << SOElement (sfDividendLedger,      SOE_OPTIONAL)
             << SOElement (sfDividendCoins,       SOE_OPTIONAL)
+			<< SOElement (sfDividendCoinsVBC,       SOE_OPTIONAL)
             ;
 }
 

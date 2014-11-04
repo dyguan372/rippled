@@ -460,6 +460,10 @@ inline bool isXRP(STAmount const& amount)
 {
     return isXRP (amount.issue().currency);
 }
+inline bool isVBC(STAmount const& amount)
+{
+	return isVBC(amount.issue().currency);
+}
 
 // VFALCO TODO Make static member accessors for these in STAmount
 extern const STAmount saZero;

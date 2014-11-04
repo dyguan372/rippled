@@ -1188,7 +1188,7 @@ STAmount LedgerEntrySet::accountHolds (
 
 bool LedgerEntrySet::isGlobalFrozen (Account const& issuer)
 {
-    if (!enforceFreeze () || isXRP (issuer))
+	if (!enforceFreeze() || isXRP(issuer) || isVBC(issuer))
         return false;
 
     SLE::pointer sle = entryCache (ltACCOUNT_ROOT, Ledger::getAccountRootIndex (issuer));
@@ -1205,7 +1205,7 @@ bool LedgerEntrySet::isFrozen(
     Currency const& currency,
     Account const& issuer)
 {
-    if (!enforceFreeze () || isXRP (currency))
+	if (!enforceFreeze() || isXRP(currency) || isVBC(currency))
         return false;
 
     SLE::pointer sle = entryCache (ltACCOUNT_ROOT, Ledger::getAccountRootIndex (issuer));
@@ -1454,6 +1454,8 @@ TER LedgerEntrySet::rippleCredit (
 
     assert (!isXRP (uSenderID) && uSenderID != noAccount());
     assert (!isXRP (uReceiverID) && uReceiverID != noAccount());
+	assert (!isVBC (uSenderID) && uSenderID != noAccount());
+	assert (!isVBC (uReceiverID) && uReceiverID != noAccount());
 
     if (!sleRippleState)
     {
@@ -1568,6 +1570,7 @@ TER LedgerEntrySet::rippleSend (
     TER             terResult;
 
     assert (!isXRP (uSenderID) && !isXRP (uReceiverID));
+	assert (!isVBC (uSenderID) && !isVBC (uReceiverID));
     assert (uSenderID != uReceiverID);
 
     if (uSenderID == issuer || uReceiverID == issuer || issuer == noAccount())

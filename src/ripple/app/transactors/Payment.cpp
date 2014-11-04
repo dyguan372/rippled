@@ -69,7 +69,7 @@ public:
         auto const& uDstCurrency = saDstAmount.getCurrency ();
 
         // isZero() is XRP.  FIX!
-        bool const bXRPDirect = uSrcCurrency.isZero () && uDstCurrency.isZero ();
+		bool const bXRPDirect = (uSrcCurrency.isZero() && uDstCurrency.isZero()) || (isVBC(uSrcCurrency) && isVBC(uDstCurrency));
 
         m_journal.trace <<
             "maxSourceAmount=" << maxSourceAmount.getFullText () <<

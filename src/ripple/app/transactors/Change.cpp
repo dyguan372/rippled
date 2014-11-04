@@ -186,6 +186,7 @@ private:
 
         uint32_t dividendLedger = mTxn.getFieldU32(sfDividendLedger);
         uint64_t dividendCoins = mTxn.getFieldU64(sfDividendCoins);
+		uint64_t dividendCoinsVBC = mTxn.getFieldU64(sfDividendCoinsVBC);
 
         std::vector<std::pair<RippleAddress, uint64_t> > accounts;
         mEngine->getLedger()->visitStateItems(std::bind(retrieveAccount,
@@ -205,6 +206,7 @@ private:
 
         dividendObject->setFieldU32(sfDividendLedger, dividendLedger);
         dividendObject->setFieldU64(sfDividendCoins, dividendCoins);
+		dividendObject->setFieldU64(sfDividendCoinsVBC, dividendCoinsVBC);
 
         mEngine->entryModify(dividendObject);
 

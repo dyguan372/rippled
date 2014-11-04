@@ -151,6 +151,8 @@ JSS ( taker_pays );
 JSS ( taker_pays_funded );
 JSS ( total_coins );
 JSS ( totalCoins );
+JSS ( total_coinsVBC );
+JSS ( totalCoinsVBC );
 JSS ( transaction );
 JSS ( transaction_hash );
 JSS ( transactions );

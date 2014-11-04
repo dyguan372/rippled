@@ -1168,6 +1168,7 @@ bool ApplicationImp::loadOldLedger (
                      std::uint32_t closeTimeResolution = 30;
                      bool closeTimeEstimated = false;
                      std::uint64_t totalCoins = 0;
+					 std::uint64_t totalCoinsVBC = 0;
 
                      if (ledger.get().isMember ("accountState"))
                      {
@@ -1195,6 +1196,12 @@ bool ApplicationImp::loadOldLedger (
                                 beast::lexicalCastThrow<std::uint64_t>
                                     (ledger.get()["total_coins"].asString());
                           }
+						  if (ledger.get().isMember("total_coinsVBC"))
+						  {
+							  totalCoinsVBC =
+								  beast::lexicalCastThrow<std::uint64_t>
+								  (ledger.get()["total_coinsVBC"].asString());
+						  }
                          ledger = ledger.get()["accountState"];
                      }
                      if (!ledger.get().isArray ())
@@ -1205,6 +1212,7 @@ bool ApplicationImp::loadOldLedger (
                      {
                          loadLedger = std::make_shared<Ledger> (seq, closeTime);
                          loadLedger->setTotalCoins(totalCoins);
+						 loadLedger->setTotalCoinsVBC(totalCoinsVBC);
 
                          for (Json::UInt index = 0; index < ledger.get().size(); ++index)
                          {

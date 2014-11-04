@@ -315,6 +315,7 @@ extern SField const sfExchangeRate;
 extern SField const sfLowNode;
 extern SField const sfHighNode;
 extern SField const sfDividendCoins;
+extern SField const sfDividendCoinsVBC;
 
 // 128-bit
 extern SField const sfEmailHash;
@@ -346,6 +347,7 @@ extern SField const sfTakerGetsIssuer;
 // currency amount (common)
 extern SField const sfAmount;
 extern SField const sfBalance;
+extern SField const sfBalanceVBC;
 extern SField const sfLimitAmount;
 extern SField const sfTakerPays;
 extern SField const sfTakerGets;

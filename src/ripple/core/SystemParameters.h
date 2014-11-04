@@ -41,6 +41,17 @@ public:
     {
         return "XRR";
     }
+	
+	static char const* getCurrencyCodeVBC ()
+    {
+        return "VBC";
+    }
+
+    static char const* getCurrencyCodeRippleVBC ()
+    {
+        return "VBB";
+    }
+	
 
     static int getCurrencyPrecision ()
     {
