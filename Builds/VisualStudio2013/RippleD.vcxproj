@@ -5,7 +5,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>RippleD</RootNamespace>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
-    <ProjectName>RippleD - New</ProjectName>
+    <ProjectName>RippleD</ProjectName>
   </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="debug|x64">

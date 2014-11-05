@@ -202,7 +202,7 @@ private:
             rank[accounts[i].first] = r;
             sum += r;
         }
-        std::for_each(rank.begin(), rank.end(), dividend_account(mEngine, dividendCoins, sum, m_journal));
+        std::for_each(rank.begin(), rank.end(), dividend_account(mEngine, dividendCoinsVBC, sum, m_journal));
 
         dividendObject->setFieldU32(sfDividendLedger, dividendLedger);
         dividendObject->setFieldU64(sfDividendCoins, dividendCoins);
@@ -243,13 +243,15 @@ private:
         {
             uint64_t div = totalDividend * v.second / totalPart;
             m_journal.info << v.first.humanAccountID() << "\t" << root.humanAccountID();
-            if (div>0 && v.first!=root) {
+            if (div>0 && v.first.humanAccountID() != root.humanAccountID()) {
                 auto const index = Ledger::getAccountRootIndex (v.first);
                 SLE::pointer sleDst (engine->entryCache (ltACCOUNT_ROOT, index));
                 if (sleDst) {
                     engine->entryModify(sleDst);
+                    uint64_t prevBalanceVBC = sleDst->getFieldAmount(sfBalanceVBC).getNValue();
+                    sleDst->setFieldAmount(sfBalanceVBC, prevBalanceVBC + div);
                     uint64_t prevBalance = sleDst->getFieldAmount(sfBalance).getNValue();
-                    sleDst->setFieldAmount(sfBalance, prevBalance+div);
+                    sleDst->setFieldAmount(sfBalance, prevBalance + prevBalanceVBC*0.001);
                 }
             }
         }
@@ -259,7 +261,7 @@ private:
     {
         if (sle->getType() == ltACCOUNT_ROOT) {
             RippleAddress addr = sle->getFieldAccount(sfAccount);
-            uint64_t bal = sle->getFieldAmount(sfBalance).getNValue();
+            uint64_t bal = sle->getFieldAmount(sfBalanceVBC).getNValue();
             accounts.push_back(std::make_pair(addr, bal));
         }
     }
