@@ -1114,7 +1114,8 @@ void ApplicationImp::startNewLedger ()
     m_journal.info << "Root account: " << rootAddress.humanAccountID ();
 
     {
-        Ledger::pointer firstLedger = std::make_shared<Ledger> (rootAddress, SYSTEM_CURRENCY_START);
+		//Ledger::pointer firstLedger = std::make_shared<Ledger>(rootAddress, SYSTEM_CURRENCY_START, SYSTEM_CURRENCY_START_VBC);
+		Ledger::pointer firstLedger = std::make_shared<Ledger>(rootAddress, SYSTEM_CURRENCY_START);
         assert (firstLedger->getAccountState (rootAddress));
         // TODO(david): Add any default amendments
         // TODO(david): Set default fee/reserve

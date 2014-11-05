@@ -340,10 +340,20 @@ public:
             }
             else
             {
-                // The source account does have enough money, so do the arithmetic
-                // for the transfer and make the ledger change.
-                mTxnAccount->setFieldAmount (sfBalance, mSourceBalance - saDstAmount);
-                sleDst->setFieldAmount (sfBalance, sleDst->getFieldAmount (sfBalance) + saDstAmount);
+				// The source account does have enough money, so do the arithmetic
+				// for the transfer and make the ledger change.
+				if (isVBC(saDstAmount))
+				{
+					mTxnAccount->setFieldAmount(sfBalanceVBC, mSourceBalance - saDstAmount);
+					sleDst->setFieldAmount(sfBalanceVBC, sleDst->getFieldAmount(sfBalanceVBC) + saDstAmount);
+				}
+				else
+				{
+					mTxnAccount->setFieldAmount(sfBalance, mSourceBalance - saDstAmount);
+					sleDst->setFieldAmount(sfBalance, sleDst->getFieldAmount(sfBalance) + saDstAmount);
+				}
+
+
 
                 // Re-arm the password change fee if we can and need to.
                 if ((sleDst->getFlags () & lsfPasswordSpent))

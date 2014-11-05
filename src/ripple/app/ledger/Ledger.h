@@ -102,7 +102,8 @@ public:
 public:
 
     // used for the starting bootstrap ledger
-    Ledger (const RippleAddress & masterID, std::uint64_t startAmount);
+	Ledger(const RippleAddress & masterID, std::uint64_t startAmount);
+	Ledger(const RippleAddress & masterID, std::uint64_t startAmount, std::uint64_t startAmountVBC);
 
     Ledger (uint256 const& parentHash, uint256 const& transHash,
             uint256 const& accountHash,

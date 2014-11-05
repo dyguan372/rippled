@@ -29,9 +29,8 @@
 
 namespace ripple {
 
-Ledger::Ledger (RippleAddress const& masterID, std::uint64_t startAmount)
+	Ledger::Ledger(RippleAddress const& masterID, std::uint64_t startAmount)
     : mTotCoins (startAmount)
-	, mTotCoinsVBC (startAmount) // REMARK - Please Review this startAmount for mTotCoinsVBC
     , mLedgerSeq (1) // First Ledger
     , mCloseTime (0)
     , mParentCloseTime (0)
@@ -65,6 +64,44 @@ Ledger::Ledger (RippleAddress const& masterID, std::uint64_t startAmount)
     initializeFees ();
     initializeDividendLedger();
 }
+
+	Ledger::Ledger(RippleAddress const& masterID, std::uint64_t startAmount, std::uint64_t startAmountVBC)
+		: mTotCoins(startAmount)
+		, mTotCoinsVBC(startAmountVBC) // REMARK - Please Review this startAmount for mTotCoinsVBC
+		, mLedgerSeq(1) // First Ledger
+		, mCloseTime(0)
+		, mParentCloseTime(0)
+		, mCloseResolution(LEDGER_TIME_ACCURACY)
+		, mCloseFlags(0)
+		, mClosed(false)
+		, mValidated(false)
+		, mValidHash(false)
+		, mAccepted(false)
+		, mImmutable(false)
+		, mTransactionMap(std::make_shared <SHAMap>(smtTRANSACTION,
+		getApp().getFullBelowCache(),
+		getApp().getTreeNodeCache()))
+		, mAccountStateMap(std::make_shared <SHAMap>(smtSTATE,
+		getApp().getFullBelowCache(),
+		getApp().getTreeNodeCache()))
+	{
+		// special case: put coins in root account
+		auto startAccount = std::make_shared<AccountState>(masterID);
+		auto& sle = startAccount->peekSLE();
+		sle.setFieldAmount(sfBalance, startAmount);
+		sle.setFieldAmount(sfBalanceVBC, startAmountVBC);
+		sle.setFieldU32(sfSequence, 1);
+
+		WriteLog(lsTRACE, Ledger)
+			<< "root account: " << startAccount->peekSLE().getJson(0);
+
+		writeBack(lepCREATE, startAccount->getSLE());
+
+		mAccountStateMap->flushDirty(hotACCOUNT_NODE, mLedgerSeq);
+
+		initializeFees();
+		initializeDividendLedger();
+	}
 
 Ledger::Ledger (uint256 const& parentHash,
                 uint256 const& transHash,
