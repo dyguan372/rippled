@@ -233,8 +233,8 @@ TER TransactionEngine::applyTransaction (
                 STAmount saPaid = txn.getTransactionFee ();
                 mLedger->destroyCoins (saPaid.getNValue ());
 
-                uint64_t dividendCoins = txn.getDividendCoins();
-				uint64_t dividendCoinsVBC = txn.getDividendCoinsVBC();
+                uint64_t dividendCoins = mLedger->getDividendCoins();
+				uint64_t dividendCoinsVBC = mLedger->getDividendCoinsVBC();
 
                 WriteLog(lsINFO, TransactionEngine) <<
                     "vPal: Dividend coins " << dividendCoins;

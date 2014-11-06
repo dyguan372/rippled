@@ -197,6 +197,8 @@ public:
 	{
 		return mTotCoinsVBC;
 	}
+    std::uint64_t getDividendCoins() const;
+    std::uint64_t getDividendCoinsVBC() const;
     void destroyCoins (std::uint64_t fee)
     {
         mTotCoins -= fee;

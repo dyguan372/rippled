@@ -2170,6 +2170,26 @@ void Ledger::initializeFees ()
     mReserveIncrement = 0;
 }
 
+uint64_t Ledger::getDividendCoins() const
+{
+    LedgerStateParms p = lepNONE;
+    auto sle = getASNode(p, Ledger::getLedgerDividendIndex(), ltDIVIDEND);
+
+    if (!sle || sle->getFieldIndex(sfDividendCoins)==-1) return 0;
+
+    return sle->getFieldU64(sfDividendCoins);
+}
+
+uint64_t Ledger::getDividendCoinsVBC() const
+{
+    LedgerStateParms p = lepNONE;
+    auto sle = getASNode(p, Ledger::getLedgerDividendIndex(), ltDIVIDEND);
+
+    if (!sle || sle->getFieldIndex(sfDividendCoinsVBC) == -1) return 0;
+
+    return sle->getFieldU64(sfDividendCoinsVBC);
+}
+
 void Ledger::updateFees ()
 {
     if (mBaseFee)
