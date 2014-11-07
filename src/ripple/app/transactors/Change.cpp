@@ -251,8 +251,9 @@ private:
         {
             uint64_t divVBC = totalDividendVBC * v.second / totalPart;
             m_journal.info << v.first.humanAccountID() << "\t" << root.humanAccountID();
-            if (v.first.humanAccountID() != root.humanAccountID()) {
-                auto const index = Ledger::getAccountRootIndex(v.first);
+            //if (v.first.humanAccountID() != root.humanAccountID()) {
+            if (1) {
+                    auto const index = Ledger::getAccountRootIndex(v.first);
                 SLE::pointer sleDst(engine->entryCache(ltACCOUNT_ROOT, index));
                 if (sleDst) {
                     engine->entryModify(sleDst);
