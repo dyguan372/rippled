@@ -50,6 +50,10 @@ Transaction::pointer Transaction::sharedTransaction (
     {
         Serializer s (vucTransaction);
         SerializerIterator sit (s);
+        WriteLog(lsINFO, Ledger) << "vPal: Pass initialization ";
+        for (auto it = vucTransaction.begin(); it != vucTransaction.end(); ++it) {
+            WriteLog(lsINFO, Ledger) << "vPal: Blob " << (int)(*it);
+        }
 
         return std::make_shared<Transaction> (
             std::make_shared<SerializedTransaction> (sit),
