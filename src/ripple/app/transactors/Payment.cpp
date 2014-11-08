@@ -342,7 +342,10 @@ public:
             {
 				// The source account does have enough money, so do the arithmetic
 				// for the transfer and make the ledger change.
-				if (isVBC(saDstAmount))
+                m_journal.info << "vPal: Deduct coin "
+                    << isVBC(saDstAmount) << mSourceBalance << saDstAmount;
+
+                if (isVBC(saDstAmount))
 				{
 					mTxnAccount->setFieldAmount(sfBalanceVBC, mSourceBalance - saDstAmount);
 					sleDst->setFieldAmount(sfBalanceVBC, sleDst->getFieldAmount(sfBalanceVBC) + saDstAmount);

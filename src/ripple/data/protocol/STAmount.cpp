@@ -919,17 +919,18 @@ amountFromJson (SField::ref name, Json::Value const& v)
         currency.asString ().empty () ||
 		(currency.asString() == systemCurrencyCode() || currency.asString() == systemCurrencyCodeVBC());
 
-    if (native)
-    {
-        if (v.isObject ())
-            throw std::runtime_error ("XRP may not be specified as an object");
-    }
-    else
+    if (! to_currency (issue.currency, currency.asString ()))
+        throw std::runtime_error ("invalid currency");
+
+    //if (native)
+    //{
+    //    //if (v.isObject ())
+    //    //    throw std::runtime_error ("XRP may not be specified as an object");
+    //}
+    //else
+    if (!native)
     {
         // non-XRP
-        if (! to_currency (issue.currency, currency.asString ()))
-            throw std::runtime_error ("invalid currency");
-
         if (! issuer.isString ()
                 || !to_issuer (issue.account, issuer.asString ()))
             throw std::runtime_error ("invalid issuer");
