@@ -2979,6 +2979,9 @@
     <ClCompile Include="..\..\src\ripple\rpc\handlers\AccountTxSwitch.cpp">
       <ExcludedFromBuild>True</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\src\ripple\rpc\handlers\AddReferee.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\src\ripple\rpc\handlers\BlackList.cpp">
       <ExcludedFromBuild>True</ExcludedFromBuild>
     </ClCompile>

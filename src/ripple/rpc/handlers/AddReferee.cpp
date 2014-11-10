@@ -19,22 +19,9 @@
 
 namespace ripple {
 
-// {
-//   account: <indent>,
-//   account_index : <index> // optional
-//   strict: <bool>
-//           if true, only allow public keys and addresses. false, default.
-//   ledger_hash : <ledger>
-//   ledger_index : <ledger_index>
-// }
-
-// TODO(tom): what is that "default"?
-Json::Value doAccountInfo (RPC::Context& context)
+Json::Value doAddReferee(RPC::Context& context)
 {
     auto& params = context.params_;
-
-    WriteLog(lsINFO, RPCHandler)
-        << (params.isMember("account") ? params["account"] : "No member \"account\"");
 
     Ledger::pointer ledger;
     Json::Value result = RPC::lookupLedger (params, ledger, context.netOps_);

@@ -113,7 +113,12 @@ LedgerFormats::LedgerFormats ()
     add ("Dividend", ltDIVIDEND)
             << SOElement (sfDividendLedger,      SOE_OPTIONAL)
             << SOElement (sfDividendCoins,       SOE_OPTIONAL)
-			<< SOElement (sfDividendCoinsVBC,       SOE_OPTIONAL)
+			<< SOElement (sfDividendCoinsVBC,    SOE_OPTIONAL)
+            ;
+
+    add("Refer", ltREFER)
+            << SOElement(sfReference,            SOE_REQUIRED)
+            << SOElement(sfReferee,              SOE_REQUIRED)
             ;
 }
 

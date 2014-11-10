@@ -519,6 +519,12 @@ private:
         return jvRequest;
     }
 
+    // add_referee <reference> <referee>
+    Json::Value parseReferralItems(const Json::Value &jvParams)
+    {
+
+    }
+
     // proof_create [<difficulty>] [<secret>]
     Json::Value parseProofCreate (Json::Value const& jvParams)
     {
@@ -803,6 +809,7 @@ public:
             {   "account_lines",        &RPCParser::parseAccountLines,          1,  5   },
             {   "account_offers",       &RPCParser::parseAccountItems,          1,  4   },
             {   "account_tx",           &RPCParser::parseAccountTransactions,   1,  8   },
+            {   "add_referee",          &RPCParser::parseReferralItems,         2,  2   },
             {   "book_offers",          &RPCParser::parseBookOffers,            2,  7   },
             {   "connect",              &RPCParser::parseConnect,               1,  2   },
             {   "consensus_info",       &RPCParser::parseAsIs,                  0,  0   },

@@ -87,6 +87,11 @@ TxFormats::TxFormats ()
         << SOElement (sfDividendCoins,       SOE_REQUIRED)
         << SOElement (sfDividendCoinsVBC,    SOE_REQUIRED)
         ;
+
+    add("AddReferee", ttREFEREE)
+        << SOElement(sfReference,            SOE_REQUIRED)
+        << SOElement(sfReferee,              SOE_REQUIRED)
+        ;
 }
 
 void TxFormats::addCommonFields (Item& item)

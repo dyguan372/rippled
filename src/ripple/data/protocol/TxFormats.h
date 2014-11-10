@@ -50,6 +50,7 @@ enum TxType
     ttAMENDMENT         = 100,
     ttFEE               = 101,
     ttDIVIDEND          = 102,
+    ttREFEREE           = 103,
 };
 
 /** Manages the list of known transaction formats.

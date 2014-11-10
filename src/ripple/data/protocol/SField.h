@@ -384,6 +384,8 @@ extern SField const sfDestination;
 extern SField const sfIssuer;
 extern SField const sfTarget;
 extern SField const sfRegularKey;
+extern SField const sfReferee;
+extern SField const sfReference;
 
 // path set
 extern SField const sfPaths;
@@ -415,6 +417,7 @@ extern SField const sfNecessary;
 extern SField const sfSufficient;
 extern SField const sfAffectedNodes;
 extern SField const sfMemos;
+extern SField const sfReferences;
 
 } // ripple
 

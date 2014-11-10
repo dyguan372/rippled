@@ -5706,6 +5706,9 @@
     <ClCompile Include="..\..\src\ripple\app\misc\DividendVoteImpl.cpp">
       <Filter>ripple\app\misc</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\ripple\rpc\handlers\AddReferee.cpp">
+      <Filter>ripple\rpc\handlers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\ripple\app\misc\DividendVote.h">

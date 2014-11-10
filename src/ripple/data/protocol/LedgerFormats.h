@@ -52,6 +52,8 @@ enum LedgerEntryType
 
     ltDIVIDEND          = 'D',
 
+    ltREFER             = 'R',
+
     /** Describes a trust line.
     */
     ltRIPPLE_STATE      = 'r',

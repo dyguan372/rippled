@@ -222,6 +222,8 @@ SField const sfAccount     = make::one(&sfAccount,     STI_ACCOUNT, 1, "Account"
 SField const sfOwner       = make::one(&sfOwner,       STI_ACCOUNT, 2, "Owner");
 SField const sfDestination = make::one(&sfDestination, STI_ACCOUNT, 3, "Destination");
 SField const sfIssuer      = make::one(&sfIssuer,      STI_ACCOUNT, 4, "Issuer");
+SField const sfReferee     = make::one(&sfReferee,     STI_ACCOUNT, 5, "Referee");
+SField const sfReference   = make::one(&sfReference,   STI_ACCOUNT, 6, "Reference");
 SField const sfTarget      = make::one(&sfTarget,      STI_ACCOUNT, 7, "Target");
 SField const sfRegularKey  = make::one(&sfRegularKey,  STI_ACCOUNT, 8, "RegularKey");
 
@@ -255,6 +257,7 @@ SField const sfNecessary       = make::one(&sfNecessary,       STI_ARRAY, 6, "Ne
 SField const sfSufficient      = make::one(&sfSufficient,      STI_ARRAY, 7, "Sufficient");
 SField const sfAffectedNodes   = make::one(&sfAffectedNodes,   STI_ARRAY, 8, "AffectedNodes");
 SField const sfMemos           = make::one(&sfMemos,           STI_ARRAY, 9, "Memos");
+SField const sfReferences      = make::one(&sfReferences,      STI_ARRAY, 10, "References");
 
 SField::SField (SerializedTypeID tid, int fv, const char* fn,
                 int meta, bool signing)
