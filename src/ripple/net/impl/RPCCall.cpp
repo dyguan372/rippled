@@ -522,7 +522,8 @@ private:
     // add_referee <reference> <referee>
     Json::Value parseReferralItems(const Json::Value &jvParams)
     {
-
+        Json::Value jvRequest(Json::objectValue);
+        return jvRequest;
     }
 
     // proof_create [<difficulty>] [<secret>]
