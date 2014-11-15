@@ -32,6 +32,7 @@ TER transact_AddWallet (SerializedTransaction const& txn, TransactionEngineParam
 TER transact_Change (SerializedTransaction const& txn, TransactionEngineParams params, TransactionEngine* engine);
 TER transact_CreateTicket (SerializedTransaction const& txn, TransactionEngineParams params, TransactionEngine* engine);
 TER transact_CancelTicket (SerializedTransaction const& txn, TransactionEngineParams params, TransactionEngine* engine);
+TER transact_AddReferee(SerializedTransaction const& txn, TransactionEngineParams params, TransactionEngine* engine);
 
 TER
 Transactor::transact (
@@ -46,6 +47,9 @@ Transactor::transact (
     {
     case ttPAYMENT:
         return transact_Payment (txn, params, engine);
+
+    case ttADDREFEREE:
+        return transact_AddReferee(txn, params, engine);
 
     case ttACCOUNT_SET:
         return transact_SetAccount (txn, params, engine);

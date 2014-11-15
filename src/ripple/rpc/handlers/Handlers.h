@@ -29,7 +29,6 @@ Json::Value doAccountOffers         (RPC::Context&);
 Json::Value doAccountTx             (RPC::Context&);
 Json::Value doAccountTxSwitch       (RPC::Context&);
 Json::Value doAccountTxOld          (RPC::Context&);
-Json::Value doAddReferee            (RPC::Context&);
 Json::Value doBookOffers            (RPC::Context&);
 Json::Value doBlackList             (RPC::Context&);
 Json::Value doConnect               (RPC::Context&);

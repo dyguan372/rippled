@@ -130,6 +130,7 @@ JSS ( quality_in );
 JSS ( quality_out );
 JSS ( random );
 JSS ( raw_meta );
+JSS ( referee );
 JSS ( request );
 JSS ( reserve_base );
 JSS ( reserve_base_xrp );

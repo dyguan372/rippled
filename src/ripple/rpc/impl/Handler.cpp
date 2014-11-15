@@ -48,7 +48,6 @@ HandlerTable HANDLERS({
     {   "account_offers",       &doAccountOffers,       Config::USER,  NEEDS_CURRENT_LEDGER  },
     {   "account_tx",           &doAccountTxSwitch,     Config::USER,  NEEDS_NETWORK_CONNECTION  },
     {   "blacklist",            &doBlackList,           Config::ADMIN,   NO_CONDITION     },
-    {   "add_referee",          &doAddReferee,          Config::USER,  NEEDS_CURRENT_LEDGER },
     {   "book_offers",          &doBookOffers,          Config::USER,  NEEDS_CURRENT_LEDGER  },
     {   "connect",              &doConnect,             Config::ADMIN,   NO_CONDITION     },
     {   "consensus_info",       &doConsensusInfo,       Config::ADMIN,   NO_CONDITION     },

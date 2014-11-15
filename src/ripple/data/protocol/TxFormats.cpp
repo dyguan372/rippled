@@ -88,9 +88,9 @@ TxFormats::TxFormats ()
         << SOElement (sfDividendCoinsVBC,    SOE_REQUIRED)
         ;
 
-    add("AddReferee", ttREFEREE)
-        << SOElement(sfReference,            SOE_REQUIRED)
-        << SOElement(sfReferee,              SOE_REQUIRED)
+    add("AddReferee", ttADDREFEREE)
+        << SOElement(sfDestination,          SOE_REQUIRED)
+        << SOElement(sfAmount,               SOE_OPTIONAL)
         ;
 }
 

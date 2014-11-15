@@ -192,22 +192,30 @@ private:
 		uint64_t dividendCoinsVBC = mTxn.getFieldU64(sfDividendCoinsVBC);
 
         std::vector<std::pair<RippleAddress, uint64_t> > accounts;
+        std::vector<RippleAddress> roots;
         mEngine->getLedger()->visitStateItems(std::bind(retrieveAccount,
-            std::ref(accounts), std::placeholders::_1));
+            std::ref(accounts), std::ref(roots), std::placeholders::_1));
         std::sort(accounts.begin(), accounts.end(), pair_less());
-        hash_map<RippleAddress, uint32_t> rank;
+        hash_map<RippleAddress, uint64_t> power;
+        for (auto it = roots.begin(); it != roots.end(); ++it) {
+            getPower(*it, power);
+        }
+
+        hash_map<RippleAddress, std::pair<uint32_t, uint64_t> > rank;
         int r = 1;
-        rank[accounts[0].first] = r;
+        rank[accounts[0].first] = std::make_pair(r, power[accounts[0].first]);
         int sum = r;
+        uint64_t sumPower = power[accounts[0].first];
         for (int i=1; i<accounts.size(); ++i) {
             if (accounts[i].second > accounts[i-1].second)
                 ++r;
-            rank[accounts[i].first] = r;
+            rank[accounts[i].first] = std::make_pair(r, power[accounts[i].first]);
             sum += r;
+            sumPower += power[accounts[i].first];
         }
         uint64_t actualTotalDividend = 0;
         uint64_t actualTotalDividendVBC = 0;
-        std::for_each(rank.begin(), rank.end(), dividend_account(mEngine, dividendCoinsVBC, sum, &actualTotalDividend, &actualTotalDividendVBC, m_journal));
+        std::for_each(rank.begin(), rank.end(), dividend_account(mEngine, dividendCoinsVBC, sum, sumPower, &actualTotalDividend, &actualTotalDividendVBC, m_journal));
 
         dividendObject->setFieldU32(sfDividendLedger, dividendLedger);
         dividendObject->setFieldU64(sfDividendCoins, actualTotalDividend);
@@ -219,6 +227,34 @@ private:
             "Current dividend object: " << dividendObject->getJson(0);
 
         return tesSUCCESS;
+    }
+
+    uint64_t getPower(const RippleAddress &r, hash_map<RippleAddress, uint64_t> &p)
+    {
+        if (p.find(r) != p.end()) return p[r];
+
+        auto const index = Ledger::getAccountRootIndex(r);
+        SLE::pointer sle(mEngine->entryCache(ltACCOUNT_ROOT, index));
+        if (!sle) {
+            m_journal.warning <<
+                "Account " << r.humanAccountID() << " does not exist.";
+            return 0;
+        }
+
+        STArray references = sle->getFieldArray(sfReferences);
+        if (references.empty()) {
+            p[r] = sle->getFieldAmount(sfBalanceVBC).getNValue();
+            return p[r];
+        }
+        uint64_t sum = 0;
+        uint64_t max = 0;
+        for (auto it = references.begin(); it != references.end(); ++it) {
+            uint64_t v = getPower(it->getFieldAccount(sfReference), p);
+            if (v > max) max = v;
+            sum += v;
+        }
+        p[r] = sum - max + pow(max, 1.0/3);
+        return p[r];
     }
 
     class pair_less {
@@ -234,12 +270,13 @@ private:
         TransactionEngine *engine;
         uint64_t totalDividendVBC;
         uint32_t totalPart;
+        uint64_t totalPower;
         beast::Journal m_journal;
         uint64_t *pActualTotalDividend;
         uint64_t *pActualTotalDividendVBC;
     public:
-        dividend_account(TransactionEngine *e, uint64_t d, uint32_t p, uint64_t *patd, uint64_t *patdv, const beast::Journal &j)
-            : engine(e), totalDividendVBC(d), totalPart(p), m_journal(j)
+        dividend_account(TransactionEngine *e, uint64_t d, uint32_t p, uint64_t p2, uint64_t *patd, uint64_t *patdv, const beast::Journal &j)
+            : engine(e), totalDividendVBC(d), totalPart(p), totalPower(p2), m_journal(j)
             , pActualTotalDividend(patd), pActualTotalDividendVBC(patdv)
         {
             RippleAddress rootSeedMaster = RippleAddress::createSeedGeneric("masterpassphrase");
@@ -247,13 +284,17 @@ private:
             root = RippleAddress::createAccountPublic(rootGeneratorMaster, 0);
         }
 
-        void operator ()(const std::pair<RippleAddress, uint64_t> &v)
+        void operator ()(const std::pair<RippleAddress, std::pair<uint32_t, uint64_t> > &v)
         {
-            uint64_t divVBC = totalDividendVBC * v.second / totalPart;
+            uint64_t totalDivVBCbyRank = totalDividendVBC / 2;
+            uint64_t totalDivVBCbyPower = totalDividendVBC - totalDivVBCbyRank;
+            uint64_t divVBCbyRank = totalDivVBCbyRank * v.second.first / totalPart;
+            uint64_t divVBCbyPower = totalDivVBCbyPower * v.second.second / totalPower;
+            uint64_t divVBC = divVBCbyRank + divVBCbyPower;
             m_journal.info << v.first.humanAccountID() << "\t" << root.humanAccountID();
             //if (v.first.humanAccountID() != root.humanAccountID()) {
             if (1) {
-                    auto const index = Ledger::getAccountRootIndex(v.first);
+                auto const index = Ledger::getAccountRootIndex(v.first);
                 SLE::pointer sleDst(engine->entryCache(ltACCOUNT_ROOT, index));
                 if (sleDst) {
                     engine->entryModify(sleDst);
@@ -271,12 +312,16 @@ private:
         }
     };
 
-    static void retrieveAccount (std::vector<std::pair<RippleAddress, uint64_t> > &accounts, SLE::ref sle)
+    static void retrieveAccount (std::vector<std::pair<RippleAddress, uint64_t> > &accounts, std::vector<RippleAddress> &roots, SLE::ref sle)
     {
         if (sle->getType() == ltACCOUNT_ROOT) {
             RippleAddress addr = sle->getFieldAccount(sfAccount);
             uint64_t bal = sle->getFieldAmount(sfBalanceVBC).getNValue();
             accounts.push_back(std::make_pair(addr, bal));
+            RippleAddress referee = sle->getFieldAccount(sfReferee);
+            if (referee.getAccountID().isZero()) {
+                roots.push_back(addr);
+            }
         }
     }
 

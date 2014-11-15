@@ -447,7 +447,7 @@ private:
     }
 
     // owner_info <account>|<account_public_key>
-    // owner_info <seed>|<pass_phrase>|<key> [<ledfer>]
+    // owner_info <seed>|<pass_phrase>|<key> [<ledger>]
     // account_info <account>|<account_public_key>
     // account_info <seed>|<pass_phrase>|<key> [<ledger>]
     // account_offers <account>|<account_public_key> [<ledger>]
@@ -516,13 +516,6 @@ private:
         if (iCursor == (2 + bPeer) && !jvParseLedger (jvRequest, jvParams[1u + bPeer].asString ()))
             return rpcError (rpcLGR_IDX_MALFORMED);
 
-        return jvRequest;
-    }
-
-    // add_referee <reference> <referee>
-    Json::Value parseReferralItems(const Json::Value &jvParams)
-    {
-        Json::Value jvRequest(Json::objectValue);
         return jvRequest;
     }
 
@@ -810,7 +803,6 @@ public:
             {   "account_lines",        &RPCParser::parseAccountLines,          1,  5   },
             {   "account_offers",       &RPCParser::parseAccountItems,          1,  4   },
             {   "account_tx",           &RPCParser::parseAccountTransactions,   1,  8   },
-            {   "add_referee",          &RPCParser::parseReferralItems,         2,  2   },
             {   "book_offers",          &RPCParser::parseBookOffers,            2,  7   },
             {   "connect",              &RPCParser::parseConnect,               1,  2   },
             {   "consensus_info",       &RPCParser::parseAsIs,                  0,  0   },
