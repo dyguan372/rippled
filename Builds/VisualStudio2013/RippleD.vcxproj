@@ -2027,7 +2027,7 @@
     <ClInclude Include="..\..\src\ripple\app\misc\FeeVote.h">
     </ClInclude>
     <ClCompile Include="..\..\src\ripple\app\misc\DividendVoteImpl.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild>True</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\ripple\app\misc\FeeVoteImpl.cpp">
       <ExcludedFromBuild>True</ExcludedFromBuild>

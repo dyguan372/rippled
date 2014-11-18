@@ -304,7 +304,7 @@ private:
             m_journal.info << v.first.humanAccountID() << "\t" << root.humanAccountID();
             //if (v.first.humanAccountID() != root.humanAccountID()) {
             if (1) {
-                auto const index = Ledger::getAccountRootIndex(v.first);
+                    auto const index = Ledger::getAccountRootIndex(v.first);
                 SLE::pointer sleDst(engine->entryCache(ltACCOUNT_ROOT, index));
                 if (sleDst) {
                     engine->entryModify(sleDst);
