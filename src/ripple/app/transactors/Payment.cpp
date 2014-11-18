@@ -347,7 +347,7 @@ public:
 
                 if (isVBC(saDstAmount))
 				{
-					mTxnAccount->setFieldAmount(sfBalanceVBC, mSourceBalance - saDstAmount);
+					mTxnAccount->setFieldAmount(sfBalanceVBC, mTxnAccount->getFieldAmount (sfBalanceVBC) - saDstAmount);
 					sleDst->setFieldAmount(sfBalanceVBC, sleDst->getFieldAmount(sfBalanceVBC) + saDstAmount);
 				}
 				else
