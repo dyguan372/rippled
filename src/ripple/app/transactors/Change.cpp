@@ -203,15 +203,15 @@ private:
 
         hash_map<RippleAddress, std::pair<uint32_t, uint64_t> > rank;
         int r = 1;
-        rank[accounts[0].first] = std::make_pair(r, power[accounts[0].first]);
+        rank[accounts[0].first] = std::make_pair(r, power[accounts[0].first].first - power[accounts[0].first].second + pow(power[accounts[0].first].second, 1.0/3));
         int sum = r;
-        uint64_t sumPower = power[accounts[0].first].first;
+        uint64_t sumPower = power[accounts[0].first].second;
         for (int i=1; i<accounts.size(); ++i) {
             if (accounts[i].second > accounts[i-1].second)
                 ++r;
-            rank[accounts[i].first] = std::make_pair(r, power[accounts[i].first]);
+            rank[accounts[i].first] = std::make_pair(r, power[accounts[i].first].first - power[accounts[i].first].second + pow(power[accounts[i].first].second, 1.0/3));
             sum += r;
-            sumPower += power[accounts[i].first].first;
+            sumPower += power[accounts[i].first].second;
         }
         uint64_t actualTotalDividend = 0;
         uint64_t actualTotalDividendVBC = 0;
@@ -243,11 +243,11 @@ private:
 
         STArray references = sle->getFieldArray(sfReferences);
         if (references.empty()) {
-            p[r].first = p[r].second = 0;
+            p[r] = std::make_pair(0, 0);
             return p[r].first;
         }
         uint64_t sum = 0;
-        uint64_t max = 0;
+        uint64_t maxP = 0;
         for (auto it = references.begin(); it != references.end(); ++it) {
             RippleAddress raChild = it->getFieldAccount(sfReference);
             auto const index = Ledger::getAccountRootIndex(raChild);
@@ -260,11 +260,10 @@ private:
             uint64_t v = getPower(raChild, p);
             uint64_t c = sleChild->getFieldAmount(sfBalanceVBC).getNValue();
             uint64_t m = p[raChild].second;
-            sum += v - pow(m, 1.0 / 3) + m;
-            max = std::max(std::max(m, c), max);
+            sum += v + c;
+            maxP = std::max(std::max(m, c), maxP);
         }
-        p[r].first = sum - max + pow(max, 1.0/3);
-        p[r].second = max;
+        p[r] = std::make_pair(sum, maxP);
         return p[r].first;
     }
 
