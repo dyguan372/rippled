@@ -196,7 +196,7 @@ private:
         mEngine->getLedger()->visitStateItems(std::bind(retrieveAccount,
             std::ref(accounts), std::ref(roots), std::placeholders::_1));
         std::sort(accounts.begin(), accounts.end(), pair_less());
-        hash_map<RippleAddress, uint64_t> power;
+        hash_map<RippleAddress, std::pair<uint64_t, uint64_t> > power;
         for (auto it = roots.begin(); it != roots.end(); ++it) {
             getPower(*it, power);
         }
@@ -205,13 +205,13 @@ private:
         int r = 1;
         rank[accounts[0].first] = std::make_pair(r, power[accounts[0].first]);
         int sum = r;
-        uint64_t sumPower = power[accounts[0].first];
+        uint64_t sumPower = power[accounts[0].first].first;
         for (int i=1; i<accounts.size(); ++i) {
             if (accounts[i].second > accounts[i-1].second)
                 ++r;
             rank[accounts[i].first] = std::make_pair(r, power[accounts[i].first]);
             sum += r;
-            sumPower += power[accounts[i].first];
+            sumPower += power[accounts[i].first].first;
         }
         uint64_t actualTotalDividend = 0;
         uint64_t actualTotalDividendVBC = 0;
@@ -229,9 +229,9 @@ private:
         return tesSUCCESS;
     }
 
-    uint64_t getPower(const RippleAddress &r, hash_map<RippleAddress, uint64_t> &p)
+    uint64_t getPower(const RippleAddress &r, hash_map<RippleAddress, std::pair<uint64_t, uint64_t> > &p)
     {
-        if (p.find(r) != p.end()) return p[r];
+        if (p.find(r) != p.end()) return p[r].first;
 
         auto const index = Ledger::getAccountRootIndex(r);
         SLE::pointer sle(mEngine->entryCache(ltACCOUNT_ROOT, index));
@@ -243,18 +243,29 @@ private:
 
         STArray references = sle->getFieldArray(sfReferences);
         if (references.empty()) {
-            p[r] = sle->getFieldAmount(sfBalanceVBC).getNValue();
-            return p[r];
+            p[r].first = p[r].second = 0;
+            return p[r].first;
         }
         uint64_t sum = 0;
         uint64_t max = 0;
         for (auto it = references.begin(); it != references.end(); ++it) {
-            uint64_t v = getPower(it->getFieldAccount(sfReference), p);
-            if (v > max) max = v;
-            sum += v;
+            RippleAddress raChild = it->getFieldAccount(sfReference);
+            auto const index = Ledger::getAccountRootIndex(raChild);
+            SLE::pointer sleChild(mEngine->entryCache(ltACCOUNT_ROOT, index));
+            if (!sleChild) {
+                m_journal.warning <<
+                    "Account " << raChild.humanAccountID() << " does not exist.";
+                continue;
+            }
+            uint64_t v = getPower(raChild, p);
+            uint64_t c = sleChild->getFieldAmount(sfBalanceVBC).getNValue();
+            uint64_t m = p[raChild].second;
+            sum += v - pow(m, 1.0 / 3) + m;
+            max = std::max(std::max(m, c), max);
         }
-        p[r] = sum - max + pow(max, 1.0/3);
-        return p[r];
+        p[r].first = sum - max + pow(max, 1.0/3);
+        p[r].second = max;
+        return p[r].first;
     }
 
     class pair_less {
